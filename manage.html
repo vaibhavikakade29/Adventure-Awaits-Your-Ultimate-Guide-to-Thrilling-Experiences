@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Adventures</title>
+    <style>
+        * {
+            font-family: 'Times New Roman', serif;
+        }
+        body {
+            background-color: #f4f7f6;
+            padding: 20px;
+        }
+        h2 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .form-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    max-width: 500px;
+    margin: auto;
+}
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+button {
+    width: 100%;
+    padding: 10px;
+    background: #f7b731;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+button:hover {
+    background: #f39c12;
+}
+table {
+    width: 100%;
+    margin-top: 20px;
+    border-collapse: collapse;
+    background: white;
+    border-radius: 5px;
+    overflow: hidden;
+}
+th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+th {
+    background: #34495e;
+    color: white;
+}
+.edit, .delete {
+    cursor: pointer;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 3px;
+}
+.edit {
+    background: #3498db;
+    color: white;
+}
+.delete {
+    background: #e74c3c;
+    color: white;
+}
+
+
+        
+    </style>
+</head>
+<body>
+
+    <h2>Manage Adventures</h2>
+
+    <!-- Adventure Form -->
+    <div class="form-container">
+        <h3>Add New Adventure</h3>
+        <input type="text" id="name" placeholder="Adventure Name" required>
+        <input type="text" id="location" placeholder="Location" required>
+        <input type="text" id="difficulty" placeholder="Difficulty (Easy, Medium, Hard)" required>
+        <input type="number" id="duration" placeholder="Duration (Days)" required>
+        <input type="number" id="price" placeholder="Price ($)" required>
+        <textarea id="description" placeholder="Description" rows="3"></textarea>
+        <button onclick="addAdventure()">Add Adventure</button>
+    </div>
+
+    <!-- Adventure List -->
+    <h3>Adventure List</h3>
+    <input type="text" id="search" onkeyup="searchAdventure()" placeholder="Search by name...">
+    <table id="adventureTable">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Location</th>
+                <th>Difficulty</th>
+                <th>Duration</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="adventureList">
+        </tbody>
+    </table>
+
+    <script>
+        let adventures = [];
+
+        function addAdventure() {
+            let name = document.getElementById('name').value;
+            let location = document.getElementById('location').value;
+            let difficulty = document.getElementById('difficulty').value;
+            let duration = document.getElementById('duration').value;
+            let price = document.getElementById('price').value;
+            let description = document.getElementById('description').value;
+
+            if (name && location && difficulty && duration && price) {
+                let adventure = { id: Date.now(), name, location, difficulty, duration, price, description };
+                adventures.push(adventure);
+                displayAdventures();
+                clearForm();
+            } else {
+                alert('Please fill all fields');
+            }
+        }
+
+        function displayAdventures() {
+            let adventureList = document.getElementById('adventureList');
+            adventureList.innerHTML = '';
+            adventures.forEach((adventure, index) => {
+                adventureList.innerHTML += `
+                    <tr>
+                        <td>${adventure.name}</td>
+                        <td>${adventure.location}</td>
+                        <td>${adventure.difficulty}</td>
+                        <td>${adventure.duration} days</td>
+                        <td>$${adventure.price}</td>
+                        <td>
+                            <button class="edit" onclick="editAdventure(${index})">Edit</button>
+                            <button class="delete" onclick="deleteAdventure(${index})">Delete</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        function deleteAdventure(index) {
+            if (confirm('Are you sure you want to delete this adventure?')) {
+                adventures.splice(index, 1);
+                displayAdventures();
+            }
+        }
+
+        function editAdventure(index) {
+            let adventure = adventures[index];
+            document.getElementById('name').value = adventure.name;
+            document.getElementById('location').value = adventure.location;
+            document.getElementById('difficulty').value = adventure.difficulty;
+            document.getElementById('duration').value = adventure.duration;
+            document.getElementById('price').value = adventure.price;
+            document.getElementById('description').value = adventure.description;
+
+            deleteAdventure(index);
+        }
+
+        function clearForm() {
+            document.getElementById('name').value = '';
+            document.getElementById('location').value = '';
+            document.getElementById('difficulty').value = '';
+            document.getElementById('duration').value = '';
+            document.getElementById('price').value = '';
+            document.getElementById('description').value = '';
+        }
+
+        function searchAdventure() {
+            let filter = document.getElementById('search').value.toUpperCase();
+            let rows = document.querySelectorAll("#adventureTable tbody tr");
+
+            rows.forEach(row => {
+                let firstCol = row.getElementsByTagName("td")[0];
+                if (firstCol) {
+                    let txtValue = firstCol.textContent || firstCol.innerText;
+                    row.style.display = txtValue.toUpperCase().indexOf(filter) > -1 ? "" : "none";
+                }
+            });
+        }
+    </script>
+
+</body>
+</html>
